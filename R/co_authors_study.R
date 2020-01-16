@@ -18,3 +18,5 @@ E(g3)$label.color="red"
 plot(community, g3, vertex.label = NA,vertex.size=5)
 par(cex=0.9)
 plot_dendrogram(community)
+
+
