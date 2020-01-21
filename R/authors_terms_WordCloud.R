@@ -2,7 +2,7 @@ library(igraph)
 library(tm)
 library(SnowballC)
 library(wordcloud)
-reviews = read.csv("../generated_data/AuthorAndTermsCleaned.csv", stringsAsFactors = T, row.names = 1)
+reviews = read.csv("../generated_data/AuthorAndTerms.csv", stringsAsFactors = T, row.names = 1)
 
 dd<-data.frame(id=reviews$author,text=reviews$title_abstract)
 colnames(dd) <- c("doc_id", "text") 
@@ -11,6 +11,7 @@ review_corpus = tm_map(review_corpus, content_transformer(tolower))
 review_corpus = tm_map(review_corpus, removeNumbers)
 review_corpus = tm_map(review_corpus, removePunctuation)
 review_corpus = tm_map(review_corpus, removeWords,  stopwords("french"))
+review_corpus = tm_map(review_corpus, removeWords,  stopwords("english"))
 review_corpus =  tm_map(review_corpus, stripWhitespace)
 inspect(review_corpus[1])
 meta(review_corpus[[1]])
@@ -38,7 +39,9 @@ review_dtm_tfidf
 inspect(review_dtm_tfidf[1,1:20])
 
 freq = data.frame(sort(colSums(as.matrix(review_dtm_tfidf)), decreasing=TRUE))
-wordcloud(rownames(freq), freq[,1], max.words=100, colors=brewer.pal(1, "Dark2"))
+freq
+par(cex=0.6)
+wordcloud(rownames(freq), freq[,1], max.words=40, colors=brewer.pal(1, "Dark2"))
 
 
 
