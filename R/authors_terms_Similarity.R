@@ -13,7 +13,7 @@ my_data <- read.csv('../generated_data/output.csv', header = TRUE, row.names = 1
 my_matrix <- as.matrix(my_data)
 graph <- graph.adjacency(weighted=TRUE,my_matrix, mode='undirected', diag = FALSE)
 
-graph <- delete.vertices(graph,  which(degree(graph)<7))
+graph <- delete.vertices(graph,  which(degree(graph)<11))
 
 graph <- delete.vertices(graph, which(degree(graph)==0))
 mymat<-as_adjacency_matrix(graph)
@@ -51,14 +51,14 @@ plot(fit)
 
 ############################# FIN Association de mots #####################################
 ############################# Similarité ##################################################
-cosine_dist_mat <- crossprod_simple_triplet_matrix(review_tdm)/ (sqrt(col_sums(review_tdm^2) %*% t(col_sums(review_tdm^2))))*100
-cosine_dist_mat["Christine Largeron","Baptiste Jeudy"]
+cosine_dist_mat <- round(crossprod_simple_triplet_matrix(review_tdm)/ (sqrt(col_sums(review_tdm^2) %*% t(col_sums(review_tdm^2))))*100,digits=2)
+cosine_dist_mat["Pascal Poncelet","Anne Laurent"]
 my_matrix <- as.matrix(cosine_dist_mat)
 #my_matrix[is.nan(my_matrix)] = 0
 #my_matrix[1,2]
 graph <- graph.adjacency(weighted=TRUE,my_matrix, mode='undirected', diag = FALSE)
 #E(graph)$weight
-graph <- delete.edges(graph, which(E(graph)$weight<80))
+graph <- delete.edges(graph, which(E(graph)$weight<70))
 graph <- delete.edges(graph, which(E(graph)$weight==100))
 graph<-delete.vertices(graph,which(degree(graph)<1))
 graph<-graph%>%
@@ -69,7 +69,8 @@ V(graph)$label.color<-"black"
 V(graph)$color<-"white"
 
 par(cex=0.5)
-community <- walktrap.community(graph)
+community <- walktrap.community(graph,steps = 2)
 plot(vertex.label=NA,community,graph,vertex.size=5)
+par(cex=0.7)
 plot_dendrogram(community)
 tkplot(graph)
