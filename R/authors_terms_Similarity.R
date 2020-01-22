@@ -13,7 +13,7 @@ my_data <- read.csv('../generated_data/output.csv', header = TRUE, row.names = 1
 my_matrix <- as.matrix(my_data)
 graph <- graph.adjacency(weighted=TRUE,my_matrix, mode='undirected', diag = FALSE)
 
-graph <- delete.vertices(graph,  which(degree(graph)<5))
+graph <- delete.vertices(graph,  which(degree(graph)<7))
 
 graph <- delete.vertices(graph, which(degree(graph)==0))
 mymat<-as_adjacency_matrix(graph)
@@ -67,4 +67,9 @@ graph<-graph%>%
   set_edge_attr("color", value = "black")
 V(graph)$label.color<-"black"
 V(graph)$color<-"white"
+
+par(cex=0.5)
+community <- walktrap.community(graph)
+plot(vertex.label=NA,community,graph,vertex.size=5)
+plot_dendrogram(community)
 tkplot(graph)
