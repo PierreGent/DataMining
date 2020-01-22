@@ -3,19 +3,18 @@ my_data <- read.csv('../generated_data/output.csv', header = TRUE, row.names = 1
 my_matrix <- as.matrix(my_data)
 graph <- graph.adjacency(weighted=TRUE,my_matrix, mode='undirected', diag = FALSE)
 
-isolated <- which(degree(graph)<15)
-g2 <- delete.vertices(graph, isolated)
+graph <- delete.vertices(graph, which(degree(graph)<15))
 
-isolated2 <- which(degree(g2)==0)
-g3 <- delete.vertices(g2, isolated2)
-community <- walktrap.community(g3)
-g3<-g3%>%
-  set_edge_attr("label", value = E(g3)$weight)
+graph <- delete.vertices(graph, which(degree(graph)==0))
+mymat<-as_adjacency_matrix(graph,attr="weight")
+community <- walktrap.community(graph)
+graph<-graph%>%
+  set_edge_attr("label", value = E(graph)$weight)
 par(cex=0.1)
-E(g3)$label.cex=10
-E(g3)$label.color="red"
+E(graph)$label.cex=10
+E(graph)$label.color="red"
 
-plot(community, g3, vertex.label = NA,vertex.size=5)
+plot(community, graph, vertex.label = NA,vertex.size=5)
 par(cex=0.9)
 plot_dendrogram(community)
 

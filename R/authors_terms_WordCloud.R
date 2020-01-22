@@ -2,7 +2,7 @@ library(igraph)
 library(tm)
 library(SnowballC)
 library(wordcloud)
-reviews = read.csv("../generated_data/AuthorAndTerms.csv", stringsAsFactors = T, row.names = 1)
+reviews = read.csv("../generated_data/AuthorAndTermsCleaned.csv", stringsAsFactors = T, row.names = 1)
 
 dd<-data.frame(id=reviews$author,text=reviews$title_abstract)
 colnames(dd) <- c("doc_id", "text") 
@@ -15,8 +15,9 @@ review_corpus = tm_map(review_corpus, removeWords,  stopwords("english"))
 review_corpus =  tm_map(review_corpus, stripWhitespace)
 inspect(review_corpus[1])
 meta(review_corpus[[1]])
-
-review_dtm <- DocumentTermMatrix(review_corpus)
+############################# Normal, sans stemm#########################################
+review_dtm <- DocumentTermMatrix(review_corpus, control = list(
+                                                               stemming = F))
 review_dtm
 
 review_dtm = removeSparseTerms(review_dtm, 0.99)
@@ -31,7 +32,21 @@ freq = data.frame(sort(colSums(as.matrix(review_dtm)), decreasing=TRUE))
 wordcloud(rownames(freq), freq[,1], max.words=50, colors=brewer.pal(1, "Dark2"))
 
 
-review_dtm_tfidf <- DocumentTermMatrix(review_corpus, control = list(weighting = weightTfIdf))
+############################# FIN Normal, sans stemm #####################################
+############################# TF-IDF, sans stemm #########################################
+review_dtm_tfidf <- DocumentTermMatrix(review_corpus, control = list(weighting = weightTfIdf,
+                                                                     stemming = F))
+review_dtm_tfidf = removeSparseTerms(review_dtm_tfidf, 0.95)
+review_dtm_tfidf
+freq = data.frame(sort(colSums(as.matrix(review_dtm_tfidf)), decreasing=TRUE))
+freq
+par(cex=0.6)
+wordcloud(rownames(freq), freq[,1], max.words=40, colors=brewer.pal(1, "Dark2"))
+
+############################# FIN TF-IDF, sans stemm #####################################
+############################# TF-IDF, avec stemm #########################################
+review_dtm_tfidf <- DocumentTermMatrix(review_corpus, control = list(weighting = weightTfIdf,
+                                                                     stemming = T))
 review_dtm_tfidf = removeSparseTerms(review_dtm_tfidf, 0.95)
 review_dtm_tfidf
 
@@ -42,6 +57,7 @@ freq = data.frame(sort(colSums(as.matrix(review_dtm_tfidf)), decreasing=TRUE))
 freq
 par(cex=0.6)
 wordcloud(rownames(freq), freq[,1], max.words=40, colors=brewer.pal(1, "Dark2"))
+############################# FIN TF-IDF, avec stemm #########################################
 
 
 
